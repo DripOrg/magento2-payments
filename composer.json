@@ -2,7 +2,6 @@
     "name": "driporg/magento2-payments",
     "description": "Drip payments for Magento 2",
     "type": "magento2-module",
-    "version": "0.0.1",
     "license": "Apache-2.0",
     "require": {
     },
