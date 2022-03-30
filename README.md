@@ -14,8 +14,3 @@
  - Ative o modulo com o comando `php bin/magento module:enable Drip_Payments`
  - Faça as atualizações do banco de dados com o comando `php bin/magento setup:upgrade`\*
  - Limpe o cache da aplicação com o comando `php bin/magento cache:flush`
-
-
-## Configurações
-
-
