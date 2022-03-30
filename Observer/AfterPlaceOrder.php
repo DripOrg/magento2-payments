@@ -4,6 +4,7 @@ namespace Drip\Payments\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
 use Drip\Payments\Utils\RequestService;
+use Exception;
 
 class AfterPlaceOrder implements ObserverInterface
 {
@@ -51,7 +52,7 @@ class AfterPlaceOrder implements ObserverInterface
             'customerName' => $shippingAddressData['firstname'] . ' ' . $shippingAddressData['lastname'],
             'customerEmail' => $shippingAddressData['email'],
             'customerAddressCep' => $shippingAddressData['postcode'],
-            'customerAddressNumber' => '',
+            'customerAddressNumber' => 0000,
             'customerAddressState' => $shippingAddressData['region'],
             'customerAddressCity' => $shippingAddressData['city'],
             'customerAddressStreet' => $shippingAddressData['street'],
@@ -121,11 +122,16 @@ class AfterPlaceOrder implements ObserverInterface
 
     private function getCustomerCpfFromOrder($order) {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $customer = $objectManager->create('Magento\Customer\Api\CustomerRepositoryInterface')->getById($order->getCustomerId());
+        try {
+            $customer = $objectManager->create('Magento\Customer\Api\CustomerRepositoryInterface')->getById($order->getCustomerId());
+        } catch (Exception $e) {
 
-        $cpf = $customer->getCustomAttribute('cpf') != null ? $customer->getCustomAttribute('cpf')->getValue() : $order->getCustomerTaxvat();
-        $cpf = strlen($cpf) > 5 ? preg_replace('/[^0-9]/', '', $cpf) : null;
-        return $cpf;
+        }
+        if (isset($customer)) {
+            $cpf = $customer->getCustomAttribute('cpf') != null ? $customer->getCustomAttribute('cpf')->getValue() : $order->getCustomerTaxvat();
+            $cpf = strlen($cpf) > 5 ? preg_replace('/[^0-9]/', '', $cpf) : null;
+            return $cpf;
+        }
+        return strlen($order->getCustomerTaxvat()) > 5 ? preg_replace('/[^0-9]/', '', $order->getCustomerTaxvat()) : null;
     }
-
 }
