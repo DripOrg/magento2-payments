@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="payment" type="text" sortOrder="400" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="custompayment" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Drip</label>
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Ativo</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="is_sandbox" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Modo de teste</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" type="text" sortOrder="10" showInDefault="0" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="sandbox_api_key" type="text" sortOrder="70" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+					<label>Chave da API de Testes</label>
+				</field>
+                <field id="api_key" type="text" sortOrder="70" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+					<label>Chave da API de Produção</label>
+				</field>
+                <field id="cnpj" type="text" sortOrder="70" showInWebsite="0" showInStore="0" showInDefault="0" translate="label">
+					<label>Chave da API de Produção</label>
+				</field>
+                <field id="cashback" type="text" sortOrder="70" showInWebsite="0" showInStore="0" showInDefault="0" translate="label">
+					<label>Cache do cashback</label>
+				</field>
+                <field id="isDisabled" type="text" sortOrder="70" showInWebsite="0" showInStore="0" showInDefault="0" translate="label">
+					<label>Cache do botao de finalizar compra</label>
+				</field>
+                <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="0" showInWebsite="0" showInStore="0">
+                    <label>Ordem</label>
+                    <validate>validate-number</validate>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

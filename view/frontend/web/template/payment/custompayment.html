@@ -1,0 +1,55 @@
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+    <div class="payment-method-title field choice">
+        <input type="radio"
+               name="payment[method]"
+               class="radio"
+               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+        <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitleWithCashback()"></span></label>
+    </div>
+
+    <div class="payment-method-content">
+        <span data-bind="text: getDescriptionWithCashback()" style="padding-bottom: 10px;"></span>
+        <style>
+            .drip_instalments_iframe {
+                border: none;
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+                margin-top: 1em;
+            }
+            @media(max-width: 1920px) {.drip_instalments_iframe {min-height: 10.5em !important;}}
+            @media(max-width: 767px) {.drip_instalments_iframe {min-height: 10em !important;}}
+        </style>
+        <iframe class="drip_instalments_iframe" scrolling="no" data-bind="attr: { src: getIframeUrl() } "></iframe>
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+        <p data-bind="html: getInstructions()"></p>
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+                <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <div class="actions-toolbar">
+            <div class="primary">
+                <button class="action primary checkout"
+                        type="submit"
+                        data-bind="
+                        click: placeOrder,
+                        attr: {title: $t('Finalizar Compra')},
+                        enable: (getCode() == isChecked() && checkDripIsEnabled()),
+                        css: {disabled: !isPlaceOrderActionAllowed()}
+                        "
+                        disabled>
+                    <span data-bind="i18n: 'Finalizar Compra'"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
