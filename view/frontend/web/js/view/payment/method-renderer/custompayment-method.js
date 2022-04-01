@@ -20,7 +20,7 @@ define([
                 style: 'currency',
                 currency: 'USD',
               });
-            return formatter.format(this.totals().grand_total).replace('$','');
+            return formatter.format(this.totals().grand_total).replace('$','').replace(',', '');
         },
         getFormattedToday: function() {
             return new Date().toISOString().slice(0, 10);

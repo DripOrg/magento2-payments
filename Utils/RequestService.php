@@ -136,6 +136,7 @@ class RequestService
                 ],
                 'headers' => ['X-API-Key' => $this->merchantKey]
             ]);
+            sleep(3);
         } catch (RuntimeException $e) {
             return null;
         }

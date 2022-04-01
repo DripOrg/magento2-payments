@@ -47,7 +47,7 @@ class AfterPlaceOrder implements ObserverInterface
         $shippingAddressData = $order->getShippingAddress()->getData();
 
         return [
-            'amount' => number_format($order->getGrandTotal(), 2),
+            'amount' => number_format($order->getGrandTotal(), 2, '.', ''),
             'customerCpf' => $this->getCustomerCpfFromOrder($order),
             'customerName' => $shippingAddressData['firstname'] . ' ' . $shippingAddressData['lastname'],
             'customerEmail' => $shippingAddressData['email'],
@@ -68,7 +68,7 @@ class AfterPlaceOrder implements ObserverInterface
         $orderProducts = [];
 
         //Add shipping to products list
-        $totalShippingAmountValue = $order->getShippingAmount() != null ? number_format($order->getShippingAmount(), 2) : '0';
+        $totalShippingAmountValue = $order->getShippingAmount() != null ? number_format($order->getShippingAmount(), 2, '.', '') : '0';
         $orderProducts[] = [
             'name' => 'shipping',
             'quantity' => 1,
@@ -96,6 +96,7 @@ class AfterPlaceOrder implements ObserverInterface
             }
 
             $orderProducts[] = [
+                'id' => $itemArray['item_id'],
                 'name' => $itemArray['name'],
                 'created' => $itemArray['created_at'],
                 'modified' => $itemArray['updated_at'],
@@ -103,8 +104,8 @@ class AfterPlaceOrder implements ObserverInterface
                 'description' => $itemArray['description'],
                 'link' => $productModel->getProductUrl(),
                 'quantity' => intval($itemArray['qty_ordered']),
-                'amount' => number_format($itemArray['price'], 2),
-                'fullAmount' => number_format($itemArray['original_price'], 2),
+                'amount' => number_format($itemArray['price'], 2, '.', ''),
+                'fullAmount' => number_format($itemArray['original_price'], 2, '.', ''),
                 'totalSales' => $totalSales,
                 'stockQuantity' => $stockQuantity,
                 'backorders' => $backOrders,
@@ -113,7 +114,7 @@ class AfterPlaceOrder implements ObserverInterface
                 'principalImage' => $productModel->getImageUrl(),
                 'ratingCount' => '',
                 'averageRating' => '',
-                'totalAmount' => number_format($itemArray['row_total'], 2),
+                'totalAmount' => number_format($itemArray['row_total'], 2, '.', ''),
                 'productDetails'=> ''
             ];
         }
