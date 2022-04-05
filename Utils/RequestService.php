@@ -29,14 +29,15 @@ class RequestService
         ];
     }
 
-    public static function checkActiveAndConfigValues($configs) {
+    public static function checkActiveAndConfigValues($configs)
+    {
         $isActive = $configs['active'];
         if (!$isActive) {
             return false;
         }
         $isSandbox = $configs['is_sandbox'];
 
-		$apiKey = $isSandbox == 0 ? $configs['api_key'] : $configs['sandbox_api_key'];
+        $apiKey = $isSandbox == 0 ? $configs['api_key'] : $configs['sandbox_api_key'];
 
         if (strlen($apiKey) > 5) {
             return true;
@@ -45,10 +46,11 @@ class RequestService
         return false;
     }
 
-    public static function createInstance($configs) {
+    public static function createInstance($configs)
+    {
         $isSandbox = $configs['is_sandbox'];
 
-		$apiKey = $isSandbox == 0 ? $configs['api_key'] : $configs['sandbox_api_key'];
+        $apiKey = $isSandbox == 0 ? $configs['api_key'] : $configs['sandbox_api_key'];
 
         return new RequestService($apiKey, $isSandbox, '0.0.15', null);
     }
@@ -77,7 +79,6 @@ class RequestService
             ]));
             return true;
         }
-        
     }
 
     public function createCheckout($data)
@@ -98,7 +99,7 @@ class RequestService
                 'url' => self::CHECKOUTS_PATH,
                 'error' => $e->getMessage()
             ]));
-            return NULL;
+            return null;
         }
     }
 
@@ -159,7 +160,8 @@ class RequestService
         }
     }
 
-    private function logError($error) {
+    private function logError($error)
+    {
         try {
             $this->client->post(self::ERROR_LOGGER, [
                 'json' => [

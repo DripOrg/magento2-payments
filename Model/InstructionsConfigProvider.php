@@ -56,11 +56,11 @@ class InstructionsConfigProvider implements ConfigProviderInterface
             if ($this->methods[$code]->isAvailable()) {
                 $config['payment']['instructions'][$code] = $this->getInstructions($code);
                 $config['payment']['dripPaymentsIframeUrl'] = 'https://drip-fe.usedrip.com.br/instalments_simulator?amount=totalOrderamount&date=actualDate';
-                $config['payment']['dripPaymentsActualCashbackRate'] = $this->getActualCashbackRatio(); 
-                $config['payment']['dripPaymentsIsDisabled'] = $this->getPluginIsDisabled(); 
+                $config['payment']['dripPaymentsActualCashbackRate'] = $this->getActualCashbackRatio();
+                $config['payment']['dripPaymentsIsDisabled'] = $this->getPluginIsDisabled();
 
                 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-                $config['payment']['dripPaymentsActualCnpj'] = 
+                $config['payment']['dripPaymentsActualCnpj'] =
                     $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment/cnpj');
             }
         }
@@ -78,21 +78,22 @@ class InstructionsConfigProvider implements ConfigProviderInterface
         return nl2br($this->escaper->escapeHtml($this->methods[$code]->getInstructions()));
     }
 
-    private function getActualCashbackRatio() {
+    private function getActualCashbackRatio()
+    {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 
-		$configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
+        $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
         $now = new DateTime();
-        if(isset($configs['cashback'])) {
+        if (isset($configs['cashback'])) {
             $actualCashbackCache = (array) json_decode($configs['cashback']);
             $expirationTime = new Datetime($actualCashbackCache['expiration']->date);
 
-            if($expirationTime > $now) {
+            if ($expirationTime > $now) {
                 return $actualCashbackCache['value'];
             }
         }
 
-		$requestService = RequestService::createInstance($configs);
+        $requestService = RequestService::createInstance($configs);
         $actualCashback = $requestService->getCashback();
         
         $configs['cashback'] = json_encode([
@@ -105,16 +106,17 @@ class InstructionsConfigProvider implements ConfigProviderInterface
         return $actualCashback;
     }
 
-    private function getPluginIsDisabled() {
+    private function getPluginIsDisabled()
+    {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 
-		$configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
+        $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
         $now = new DateTime();
-        if(isset($configs['isDisabled'])) {
+        if (isset($configs['isDisabled'])) {
             $actualIsDisabledCache = (array) json_decode($configs['isDisabled']);
             $expirationTime = new Datetime($actualIsDisabledCache['expiration']->date);
 
-            if($expirationTime > $now) {
+            if ($expirationTime > $now) {
                 return $actualIsDisabledCache['value'];
             }
         }
@@ -123,7 +125,7 @@ class InstructionsConfigProvider implements ConfigProviderInterface
             return true;
         }
 
-		$requestService = RequestService::createInstance($configs);
+        $requestService = RequestService::createInstance($configs);
         $actualIsDisabled = $requestService->isDisabled();
         
         $configs['isDisabled'] = json_encode([

@@ -11,11 +11,11 @@ class PostData extends \Magento\Framework\App\Action\Action
 {
     public function __construct(
         Context $context,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig, 
-        Session $checkoutSession, 
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        Session $checkoutSession,
         \Magento\Framework\Locale\Resolver $store,
         \Magento\Framework\UrlInterface $urlBuilder,
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory, 
+        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Magento\Directory\Model\CountryFactory $countryFactory,
         \Magento\Framework\HTTP\Client\Curl $curl
     ) {
@@ -40,15 +40,15 @@ class PostData extends \Magento\Framework\App\Action\Action
             
         //Your custom code for getting the data the payment provider needs
         //Structure your return data so the form-builder.js can build your form correctly
-        $post_data = array(
+        $post_data = [
             'action' => "formactionurl",
-            'fields' => array (
+            'fields' =>  [
                 'shop_id' => "shop_id",
                 'order_id' => "order_id",
                 'api_key' => "api_key",
                 //add all the fields you need
-            )
-        );
+            ]
+        ];
         $result = $this->resultJsonFactory->create();
 
         return $result->setData($post_data); //return data in JSON format
