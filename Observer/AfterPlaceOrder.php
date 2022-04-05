@@ -27,6 +27,10 @@ class AfterPlaceOrder implements ObserverInterface
         {
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
+            if (!RequestService::checkActiveAndConfigValues($configs)) {
+                return false;
+            }
+            
             $requestService = RequestService::createInstance($configs);
 
             $checkoutData = $this->createCheckoutData($order);

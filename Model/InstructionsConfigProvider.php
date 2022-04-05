@@ -119,6 +119,10 @@ class InstructionsConfigProvider implements ConfigProviderInterface
             }
         }
 
+        if (RequestService::checkActiveAndConfigValues($configs)) {
+            return true;
+        }
+
 		$requestService = RequestService::createInstance($configs);
         $actualIsDisabled = $requestService->isDisabled();
         

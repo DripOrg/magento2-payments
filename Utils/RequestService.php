@@ -29,12 +29,28 @@ class RequestService
         ];
     }
 
+    public static function checkActiveAndConfigValues($configs) {
+        $isActive = $configs['active'];
+        if (!$isActive) {
+            return false;
+        }
+        $isSandbox = $configs['is_sandbox'];
+
+		$apiKey = $isSandbox == 0 ? $configs['api_key'] : $configs['sandbox_api_key'];
+
+        if (strlen($apiKey) > 5) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static function createInstance($configs) {
         $isSandbox = $configs['is_sandbox'];
 
-		$apiKey = $isSandbox == 0 ? $apiKey = $configs['api_key'] : $apiKey = $configs['sandbox_api_key'];
+		$apiKey = $isSandbox == 0 ? $configs['api_key'] : $configs['sandbox_api_key'];
 
-        return new RequestService($apiKey, $isSandbox, '0.0.1', null);
+        return new RequestService($apiKey, $isSandbox, '0.0.15', null);
     }
 
     public function __construct($merchantKey, $testMode, $plugin_version, \GuzzleHttp\Client $client = null)
@@ -55,7 +71,10 @@ class RequestService
 
             return json_decode($response->getBody())->isDisabled == true;
         } catch (RuntimeException $e) {
-            $this->logError($e->getMessage());
+            $this->logError(json_encode([
+                'url' => self::IS_DISABLED_PATH,
+                'error' => $e->getMessage()
+            ]));
             return true;
         }
         
@@ -69,10 +88,16 @@ class RequestService
                 'headers' => ['X-API-Key' => $this->merchantKey]
             ]);
         } catch (RequestException $e) {
-            $this->logError($e->getResponse());
+            $this->logError(json_encode([
+                'url' => self::CHECKOUTS_PATH,
+                'error' => $e->getResponse()->getBody()
+            ]));
             return $e->getResponse();
         } catch (RuntimeException $e) {
-            $this->logError($e->getMessage());
+            $this->logError(json_encode([
+                'url' => self::CHECKOUTS_PATH,
+                'error' => $e->getMessage()
+            ]));
             return NULL;
         }
     }
@@ -88,7 +113,10 @@ class RequestService
 
             return json_decode($response->getBody());
         } catch (RuntimeException $e) {
-            $this->logError($e->getMessage());
+            $this->logError(json_encode([
+                'url' => self::CHECKOUTS_PATH . '/' . $checkoutId,
+                'error' => $e->getMessage()
+            ]));
             return false;
         }
     }
@@ -104,7 +132,10 @@ class RequestService
             $resp_body = (array) json_decode($response->getBody());
             return $resp_body['cashbackRate'] * 100;
         } catch (RuntimeException $e) {
-            $this->logError($e->getMessage());
+            $this->logError(json_encode([
+                'url' => self::SIMULATOR_PATH,
+                'error' => $e->getMessage()
+            ]));
             return '2';
         }
     }
@@ -120,7 +151,10 @@ class RequestService
             $resp_body = (array) json_decode($response->getBody());
             return $resp_body['cnpj'];
         } catch (RuntimeException $e) {
-            $this->logError($e->getMessage());
+            $this->logError(json_encode([
+                'url' => self::MERCHANT_CNPJ,
+                'error' => $e->getMessage()
+            ]));
             return null;
         }
     }

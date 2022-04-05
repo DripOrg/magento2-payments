@@ -33,8 +33,8 @@ class Process extends \Magento\Framework\App\Action\Action {
 		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 
 		$configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
-		$isActive = $configs['active'];
-		if ($isActive == 0 || strlen($checkoutId) < 8) {
+
+		if (!RequestService::checkActiveAndConfigValues($configs) || strlen($checkoutId) < 8) {
 			return false;
 		}
 
@@ -54,7 +54,7 @@ class Process extends \Magento\Framework\App\Action\Action {
 		if ($order->getStatus() == 'pending') {
 			if ($checkout->status == 'OK') {
 				$order->setState($processingStatus)->setStatus($processingStatus);
-				$order->setTotalPaid(number_format($order->getGrandTotal(), 2));  
+				$order->setTotalPaid(number_format($order->getGrandTotal(), 2, '.', ''));
 				$order->addStatusHistoryComment("Ordem #{$orderId} aprovada. (Checkout Drip #{$checkoutId}, Ordem Drip #{$checkout->orderId})")->setIsCustomerNotified(false);
 				$order->save();
 		
@@ -70,7 +70,7 @@ class Process extends \Magento\Framework\App\Action\Action {
 				$order->addStatusHistoryComment("Ordem #{$orderId} negada. (Checkout Drip #{$checkoutId})")->setIsCustomerNotified(true);            
 				$order->save();
 			}
-			return true;
+			die(var_dump(true));
 		}
 		$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
 		$redirectUrl = $storeManager->getStore()->getBaseUrl() . "sales/order/view/order_id/$orderId";

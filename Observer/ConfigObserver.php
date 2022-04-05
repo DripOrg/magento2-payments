@@ -18,6 +18,9 @@ class ConfigObserver implements ObserverInterface
 
 		$configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
 
+        if (!RequestService::checkActiveAndConfigValues($configs)) {
+            return false;
+        }
 		$requestService = RequestService::createInstance($configs);
 
         $objectManager->get('Magento\Framework\App\Config\Storage\WriterInterface')->save('payment/custompayment/cnpj', $requestService->getCnpj(), 'default');

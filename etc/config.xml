@@ -4,7 +4,7 @@
     <default>
         <payment>
             <custompayment>
-                <active>1</active>
+                <active>0</active>
                 <is_sandbox>0</is_sandbox>
                 <model>Drip\Payments\Model\Custompayment</model>
                 <order_status>pending</order_status>
