@@ -15,7 +15,7 @@ namespace Drip\Payments\Model;
  */
 class Custompayment extends \Magento\Payment\Model\Method\AbstractMethod
 {
-    const CUSTOM_PAYMENT_CODE = 'custompayment';
+    public const CUSTOM_PAYMENT_CODE = 'custompayment';
 
     /**
      * Payment method code

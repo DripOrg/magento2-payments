@@ -9,6 +9,18 @@ use Magento\Sales\Model\Order;
 
 class PostData extends \Magento\Framework\App\Action\Action
 {
+    /**
+     * Used to start PostData content
+     *
+     * @param Context $context
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Session $checkoutSession
+     * @param Resolver $store
+     * @param UrlInterface $urlBuilder
+     * @param JsonFactory $resultJsonFactory
+     * @param CountryFactory $countryFactory
+     * @param Curl $curl
+     */
     public function __construct(
         Context $context,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -20,14 +32,27 @@ class PostData extends \Magento\Framework\App\Action\Action
         \Magento\Framework\HTTP\Client\Curl $curl
     ) {
         parent::__construct($context);
-        $this->scopeConfig = $scopeConfig; //Used for getting data from System/Admin config
-        $this->checkoutSession = $checkoutSession; //Used for getting the order: $order = $this->checkoutSession->getLastRealOrder(); And other order data like ID & amount
-        $this->store = $store; //Used for getting store locale if needed $language_code = $this->store->getLocale();
-        $this->urlBuilder = $urlBuilder; //Used for creating URLs to other custom controllers, for example $success_url = $this->urlBuilder->getUrl('frontname/path/action');
-        $this->resultJsonFactory = $resultJsonFactory; //Used for returning JSON data to the afterPlaceOrder function ($result = $this->resultJsonFactory->create(); return $result->setData($post_data);)
+        // Used for getting data from System/Admin config
+        $this->scopeConfig = $scopeConfig;
+        // Used for getting the order: $order = $this->checkoutSession->getLastRealOrder();
+        // And other order data like ID & amount
+        $this->checkoutSession = $checkoutSession;
+        // Used for getting store locale if needed $language_code = $this->store->getLocale();
+        $this->store = $store;
+        // Used for creating URLs to other custom controllers, for example
+        // $success_url = $this->urlBuilder->getUrl('frontname/path/action');
+        $this->urlBuilder = $urlBuilder;
+        //Used for returning JSON data to the afterPlaceOrder
+        //function ($result = $this->resultJsonFactory->create(); return $result->setData($post_data);)
+        $this->resultJsonFactory = $resultJsonFactory;
         $this->curl = $curl;
     }
 
+    /**
+     * Execute postData values
+     *
+     * @return JSON
+     */
     public function execute()
     {
         $params = [

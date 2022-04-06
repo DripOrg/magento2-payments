@@ -17,13 +17,17 @@ class ConfigObserver implements ObserverInterface
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 
-        $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
+        $configs = $objectManager
+            ->get(Magento\Framework\App\Config\ScopeConfigInterface::class)
+            ->getValue('payment/custompayment');
 
         if (!RequestService::checkActiveAndConfigValues($configs)) {
             return false;
         }
         $requestService = RequestService::createInstance($configs);
 
-        $objectManager->get('Magento\Framework\App\Config\Storage\WriterInterface')->save('payment/custompayment/cnpj', $requestService->getCnpj(), 'default');
+        $objectManager
+            ->get(Magento\Framework\App\Config\Storage\WriterInterface::class)
+            ->save('payment/custompayment/cnpj', $requestService->getCnpj(), 'default');
     }
 }

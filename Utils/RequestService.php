@@ -6,15 +6,20 @@ use \GuzzleHttp\Exception\RequestException;
 
 class RequestService
 {
-    const BASE_URI_SANDBOX = 'https://sbx-drip-be.usedrip.com.br/api/';
-    const BASE_URI_PRODUCTION = 'https://drip-be.usedrip.com.br/api/';
+    private const BASE_URI_SANDBOX = 'https://sbx-drip-be.usedrip.com.br/api/';
+    private const BASE_URI_PRODUCTION = 'https://drip-be.usedrip.com.br/api/';
 
-    const CHECKOUTS_PATH = 'v1/checkouts';
-    const IS_DISABLED_PATH = self::CHECKOUTS_PATH . '/disabled';
-    const SIMULATOR_PATH = 'v1/instalments_simulator';
-    const MERCHANT_CNPJ = 'v1/merchants/get_cnpj';
-    const ERROR_LOGGER = 'v1/merchants/log_plugin_error';
+    private const CHECKOUTS_PATH = 'v1/checkouts';
+    private const IS_DISABLED_PATH = self::CHECKOUTS_PATH . '/disabled';
+    private const SIMULATOR_PATH = 'v1/instalments_simulator';
+    private const MERCHANT_CNPJ = 'v1/merchants/get_cnpj';
+    private const ERROR_LOGGER = 'v1/merchants/log_plugin_error';
 
+    /**
+     * Return options options to guzzle
+     *
+     * @param Boolean $testMode
+     */
     private static function options($testMode): array
     {
         return [
@@ -29,6 +34,11 @@ class RequestService
         ];
     }
 
+    /**
+     * Check if plugin is active and configs are valid
+     *
+     * @param Array $configs
+     */
     public static function checkActiveAndConfigValues($configs)
     {
         $isActive = $configs['active'];
@@ -46,6 +56,11 @@ class RequestService
         return false;
     }
 
+    /**
+     * Create request instance
+     *
+     * @param Array $configs
+     */
     public static function createInstance($configs)
     {
         $isSandbox = $configs['is_sandbox'];
@@ -55,6 +70,14 @@ class RequestService
         return new RequestService($apiKey, $isSandbox, '0.0.15', null);
     }
 
+    /**
+     * Create request service instance
+     *
+     * @param String $merchantKey
+     * @param Boolean $testMode
+     * @param String $plugin_version
+     * @param Client $client
+     */
     public function __construct($merchantKey, $testMode, $plugin_version, \GuzzleHttp\Client $client = null)
     {
         $this->merchantKey = $merchantKey;
@@ -66,6 +89,9 @@ class RequestService
                 //$this->curl->setOption(CURLOPT_SSL_VERIFYHOST, 0);
             //$this->curl->setOption(CURLOPT_SSL_VERIFYPEER, 0);
 
+    /**
+     * Check if application is disabled
+     */
     public function isDisabled(): bool
     {
         try {
@@ -73,40 +99,68 @@ class RequestService
 
             return json_decode($response->getBody())->isDisabled == true;
         } catch (RuntimeException $e) {
-            $this->logError(json_encode([
-                'url' => self::IS_DISABLED_PATH,
-                'error' => $e->getMessage()
-            ]));
+            $this->logError(
+                json_encode(
+                    [
+                    'url' => self::IS_DISABLED_PATH,
+                    'error' => $e->getMessage()
+                    ]
+                )
+            );
             return true;
         }
     }
 
+    /**
+     * Create checkout on application
+     *
+     * @param Array $data
+     */
     public function createCheckout($data)
     {
         try {
-            return $this->client->post(self::CHECKOUTS_PATH, [
+            return $this->client->post(
+                self::CHECKOUTS_PATH,
+                [
                 'json' => $data,
                 'headers' => ['X-API-Key' => $this->merchantKey]
-            ]);
+                ]
+            );
         } catch (RequestException $e) {
-            $this->logError(json_encode([
-                'url' => self::CHECKOUTS_PATH,
-                'error' => $e->getResponse()->getBody()
-            ]));
+            $this->logError(
+                json_encode(
+                    [
+                    'url' => self::CHECKOUTS_PATH,
+                    'error' => $e->getResponse()->getBody()
+                    ]
+                )
+            );
             return $e->getResponse();
         } catch (RuntimeException $e) {
-            $this->logError(json_encode([
-                'url' => self::CHECKOUTS_PATH,
-                'error' => $e->getMessage()
-            ]));
+            $this->logError(
+                json_encode(
+                    [
+                    'url' => self::CHECKOUTS_PATH,
+                    'error' => $e->getMessage()
+                    ]
+                )
+            );
             return null;
         }
     }
 
+    /**
+     * Get checkout from checkoutId
+     *
+     * @param String $checkoutId
+     */
     public function getCheckout($checkoutId)
     {
         try {
-            $response = $this->client->get(self::CHECKOUTS_PATH . '/' . $checkoutId, ['headers' => ['X-API-Key' => $this->merchantKey]]);
+            $response = $this->client->get(
+                self::CHECKOUTS_PATH . '/' . $checkoutId,
+                ['headers' => ['X-API-Key' => $this->merchantKey]]
+            );
 
             if ($response->getStatusCode() !== 200) {
                 return false;
@@ -114,18 +168,28 @@ class RequestService
 
             return json_decode($response->getBody());
         } catch (RuntimeException $e) {
-            $this->logError(json_encode([
-                'url' => self::CHECKOUTS_PATH . '/' . $checkoutId,
-                'error' => $e->getMessage()
-            ]));
+            $this->logError(
+                json_encode(
+                    [
+                    'url' => self::CHECKOUTS_PATH . '/' . $checkoutId,
+                    'error' => $e->getMessage()
+                    ]
+                )
+            );
             return false;
         }
     }
 
+    /**
+     * Get cashback based on api key
+     */
     public function getCashback()
     {
         try {
-            $response = $this->client->get(self::SIMULATOR_PATH . '?amount=99&date=2021-10-10', ['headers' => ['X-API-Key' => $this->merchantKey]]);
+            $response = $this->client->get(
+                self::SIMULATOR_PATH . '?amount=99&date=2021-10-10',
+                ['headers' => ['X-API-Key' => $this->merchantKey]]
+            );
             if ($response->getStatusCode() !== 200) {
                 return '2';
             }
@@ -133,14 +197,21 @@ class RequestService
             $resp_body = (array) json_decode($response->getBody());
             return $resp_body['cashbackRate'] * 100;
         } catch (RuntimeException $e) {
-            $this->logError(json_encode([
-                'url' => self::SIMULATOR_PATH,
-                'error' => $e->getMessage()
-            ]));
+            $this->logError(
+                json_encode(
+                    [
+                    'url' => self::SIMULATOR_PATH,
+                    'error' => $e->getMessage()
+                    ]
+                )
+            );
             return '2';
         }
     }
 
+    /**
+     * Get cnpj based on api key
+     */
     public function getCnpj()
     {
         try {
@@ -152,18 +223,29 @@ class RequestService
             $resp_body = (array) json_decode($response->getBody());
             return $resp_body['cnpj'];
         } catch (RuntimeException $e) {
-            $this->logError(json_encode([
-                'url' => self::MERCHANT_CNPJ,
-                'error' => $e->getMessage()
-            ]));
+            $this->logError(
+                json_encode(
+                    [
+                    'url' => self::MERCHANT_CNPJ,
+                    'error' => $e->getMessage()
+                    ]
+                )
+            );
             return null;
         }
     }
 
+    /**
+     * Send error to application
+     *
+     * @param String $error
+     */
     private function logError($error)
     {
         try {
-            $this->client->post(self::ERROR_LOGGER, [
+            $this->client->post(
+                self::ERROR_LOGGER,
+                [
                 'json' => [
                     'website' => get_bloginfo('wpurl'),
                     'ecommerceType' => 'MAGENTO',
@@ -171,8 +253,8 @@ class RequestService
                     'error' => $error
                 ],
                 'headers' => ['X-API-Key' => $this->merchantKey]
-            ]);
-            sleep(3);
+                ]
+            );
         } catch (RuntimeException $e) {
             return null;
         }

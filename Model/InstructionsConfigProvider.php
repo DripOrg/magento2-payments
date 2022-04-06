@@ -33,7 +33,7 @@ class InstructionsConfigProvider implements ConfigProviderInterface
 
     /**
      * @param PaymentHelper $paymentHelper
-     * @param Escaper $escaper
+     * @param Escaper       $escaper
      */
     public function __construct(
         PaymentHelper $paymentHelper,
@@ -46,7 +46,7 @@ class InstructionsConfigProvider implements ConfigProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getConfig()
     {
@@ -54,14 +54,20 @@ class InstructionsConfigProvider implements ConfigProviderInterface
         
         foreach ($this->methodCodes as $code) {
             if ($this->methods[$code]->isAvailable()) {
-                $config['payment']['instructions'][$code] = $this->getInstructions($code);
-                $config['payment']['dripPaymentsIframeUrl'] = 'https://drip-fe.usedrip.com.br/instalments_simulator?amount=totalOrderamount&date=actualDate';
-                $config['payment']['dripPaymentsActualCashbackRate'] = $this->getActualCashbackRatio();
-                $config['payment']['dripPaymentsIsDisabled'] = $this->getPluginIsDisabled();
+                $config['payment']['instructions'][$code] =
+                    $this->getInstructions($code);
+                $config['payment']['dripPaymentsIframeUrl'] =
+                    'https://drip-fe.usedrip.com.br/instalments_simulator?amount=totalOrderamount&date=actualDate';
+                $config['payment']['dripPaymentsActualCashbackRate'] =
+                    $this->getActualCashbackRatio();
+                $config['payment']['dripPaymentsIsDisabled'] =
+                    $this->getPluginIsDisabled();
 
                 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
                 $config['payment']['dripPaymentsActualCnpj'] =
-                    $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment/cnpj');
+                    $objectManager
+                        ->get(Magento\Framework\App\Config\ScopeConfigInterface::class)
+                        ->getValue('payment/custompayment/cnpj');
             }
         }
         return $config;
@@ -70,7 +76,7 @@ class InstructionsConfigProvider implements ConfigProviderInterface
     /**
      * Get instructions text from config
      *
-     * @param string $code
+     * @param  string $code
      * @return string
      */
     protected function getInstructions($code)
@@ -78,11 +84,16 @@ class InstructionsConfigProvider implements ConfigProviderInterface
         return nl2br($this->escaper->escapeHtml($this->methods[$code]->getInstructions()));
     }
 
+    /**
+     * Get cashback ratio
+     */
     private function getActualCashbackRatio()
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 
-        $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
+        $configs = $objectManager
+            ->get(Magento\Framework\App\Config\ScopeConfigInterface::class)
+            ->getValue('payment/custompayment');
         $now = new DateTime();
         if (isset($configs['cashback'])) {
             $actualCashbackCache = (array) json_decode($configs['cashback']);
@@ -96,21 +107,28 @@ class InstructionsConfigProvider implements ConfigProviderInterface
         $requestService = RequestService::createInstance($configs);
         $actualCashback = $requestService->getCashback();
         
-        $configs['cashback'] = json_encode([
+        $configs['cashback'] = json_encode(
+            [
             'value' => $actualCashback,
             'expiration' => $now->add(new DateInterval('PT5M'))
-        ]);
+            ]
+        );
 
-        $objectManager->get('Magento\Framework\App\Config\Storage\WriterInterface')->save('payment/custompayment/cashback', $configs['cashback'], 'default');
+        $objectManager->get(Magento\Framework\App\Config\Storage\WriterInterface::class)
+            ->save('payment/custompayment/cashback', $configs['cashback'], 'default');
 
         return $actualCashback;
     }
 
+    /**
+     * Check plugin is enabled
+     */
     private function getPluginIsDisabled()
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 
-        $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
+        $configs = $objectManager->get(Magento\Framework\App\Config\ScopeConfigInterface::class)
+            ->getValue('payment/custompayment');
         $now = new DateTime();
         if (isset($configs['isDisabled'])) {
             $actualIsDisabledCache = (array) json_decode($configs['isDisabled']);
@@ -128,12 +146,15 @@ class InstructionsConfigProvider implements ConfigProviderInterface
         $requestService = RequestService::createInstance($configs);
         $actualIsDisabled = $requestService->isDisabled();
         
-        $configs['isDisabled'] = json_encode([
+        $configs['isDisabled'] = json_encode(
+            [
             'value' => $actualIsDisabled,
             'expiration' => $now->add(new DateInterval('PT5M'))
-        ]);
+            ]
+        );
 
-        $objectManager->get('Magento\Framework\App\Config\Storage\WriterInterface')->save('payment/custompayment/isDisabled', $configs['isDisabled'], 'default');
+        $objectManager->get(Magento\Framework\App\Config\Storage\WriterInterface::class)
+            ->save('payment/custompayment/isDisabled', $configs['isDisabled'], 'default');
 
         return $actualIsDisabled;
     }

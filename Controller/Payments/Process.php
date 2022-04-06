@@ -8,22 +8,30 @@ use Exception;
 class Process extends \Magento\Framework\App\Action\Action
 {
     
+    /**
+     * @param InvoiceService $invoiceService
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @param Context $context
+     * @param PageFactory $pageFactory
+     */
     public function __construct(
         \Magento\Sales\Model\Service\InvoiceService $invoiceService,
-        \Magento\Framework\App\Response\RedirectInterface $redirect,
         \Magento\Framework\App\RequestInterface $request,
         \Magento\Framework\App\ResponseInterface $response,
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $pageFactory
     ) {
         $this->invoiceService = $invoiceService;
-        $this->_redirect = $redirect;
         $this->_request = $request;
         $this->_response = $response;
         $this->_pageFactory = $pageFactory;
         return parent::__construct($context);
     }
 
+    /**
+     * Process order
+     */
     public function execute()
     {
         $checkoutId = $this->_request->getParam('checkoutId');
@@ -33,7 +41,8 @@ class Process extends \Magento\Framework\App\Action\Action
         
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 
-        $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
+        $configs = $objectManager->get(Magento\Framework\App\Config\ScopeConfigInterface::class)
+            ->getValue('payment/custompayment');
 
         if (!RequestService::checkActiveAndConfigValues($configs) || strlen($checkoutId) < 8) {
             return false;
@@ -51,12 +60,16 @@ class Process extends \Magento\Framework\App\Action\Action
 
         $processingStatus = \Magento\Sales\Model\Order::STATE_PROCESSING;
 
-        $order = $objectManager->create('Magento\Sales\Api\Data\OrderInterface')->load($orderId);
+        $order = $objectManager->create(Magento\Sales\Api\Data\OrderInterface::class)
+            ->load($orderId);
         if ($order->getStatus() == 'pending') {
             if ($checkout->status == 'OK') {
                 $order->setState($processingStatus)->setStatus($processingStatus);
                 $order->setTotalPaid(number_format($order->getGrandTotal(), 2, '.', ''));
-                $order->addStatusHistoryComment("Ordem #{$orderId} aprovada. (Checkout Drip #{$checkoutId}, Ordem Drip #{$checkout->orderId})")->setIsCustomerNotified(false);
+                $order->addStatusHistoryComment(
+                    "Ordem #{$orderId} aprovada. (Checkout Drip #{$checkoutId}, 
+                    Ordem Drip #{$checkout->orderId})"
+                )->setIsCustomerNotified(false);
                 $order->save();
         
                 $invoice = $this->invoiceService->prepareInvoice($order);
@@ -68,13 +81,15 @@ class Process extends \Magento\Framework\App\Action\Action
             if ($checkout->status == 'KO') {
                 $canceledStatus = \Magento\Sales\Model\Order::STATE_CANCELED;
                 $order->setState($canceledStatus)->setStatus($canceledStatus);
-                $order->addStatusHistoryComment("Ordem #{$orderId} negada. (Checkout Drip #{$checkoutId})")->setIsCustomerNotified(true);
+                $order->addStatusHistoryComment(
+                    "Ordem #{$orderId} negada. (Checkout Drip #{$checkoutId})"
+                )->setIsCustomerNotified(true);
                 $order->save();
             }
-            die(var_dump(true));
         }
-        $storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
-        $redirectUrl = $storeManager->getStore()->getBaseUrl() . "sales/order/view/order_id/$orderId";
-        return $this->_redirect->redirect($this->_response, $redirectUrl);
+        //$storeManager = $objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
+        //$redirectUrl = $storeManager->getStore()->getBaseUrl() . "sales/order/view/order_id/$orderId";
+        $resultRedirect = $this->resultRedirectFactory->create();
+        return $resultRedirect->setPath("sales/order/view/order_id/$orderId");
     }
 }
