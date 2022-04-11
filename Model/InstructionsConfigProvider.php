@@ -119,7 +119,7 @@ class InstructionsConfigProvider implements ConfigProviderInterface
             }
         }
 
-        if (RequestService::checkActiveAndConfigValues($configs)) {
+        if (!RequestService::checkActiveAndConfigValues($configs)) {
             return true;
         }
 
