@@ -70,7 +70,6 @@ class Process extends \Magento\Framework\App\Action\Action {
 				$order->addStatusHistoryComment("Ordem #{$orderId} negada. (Checkout Drip #{$checkoutId})")->setIsCustomerNotified(true);            
 				$order->save();
 			}
-			die(var_dump(true));
 		}
 		$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
 		$redirectUrl = $storeManager->getStore()->getBaseUrl() . "sales/order/view/order_id/$orderId";
