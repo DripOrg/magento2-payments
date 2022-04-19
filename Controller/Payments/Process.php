@@ -14,7 +14,7 @@ class Process extends \Magento\Framework\App\Action\Action {
         \Magento\Framework\App\ResponseInterface $response,
 		\Magento\Framework\App\Action\Context $context,
 		\Magento\Framework\View\Result\PageFactory $pageFactory,
-		\Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender,
+		\Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender
 	) {
 		$this->invoiceService = $invoiceService;
 		$this->_redirect = $redirect;
