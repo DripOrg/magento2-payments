@@ -84,6 +84,14 @@ class Process extends \Magento\Framework\App\Action\Action {
 					$redirectUrl = $storeManager->getStore()->getBaseUrl() . "checkout/onepage/failure";
 					return $this->_redirect->redirect($this->_response, $redirectUrl);
 				}
+		} else {
+			if ($checkout->status == 'OK') {
+				$redirectUrl = $storeManager->getStore()->getBaseUrl() . "checkout/onepage/success";
+				return $this->_redirect->redirect($this->_response, $redirectUrl);
+			} else {
+				$redirectUrl = $storeManager->getStore()->getBaseUrl() . "checkout/onepage/failure";
+				return $this->_redirect->redirect($this->_response, $redirectUrl);
+			}
 		}
 		return $this->_redirect->redirect($this->_response, $baseUrl);
 	}
