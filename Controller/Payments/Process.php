@@ -73,17 +73,14 @@ class Process extends \Magento\Framework\App\Action\Action {
 				} catch (\Exception $e) {
 					$this->logger->error($e->getMessage());
 				}
-				$redirectUrl = $storeManager->getStore()->getBaseUrl() . "checkout/onepage/success";
-				return $this->_redirect->redirect($this->_response, $redirectUrl);
-				}
-				if ($checkout->status == 'KO') {
-					$canceledStatus = \Magento\Sales\Model\Order::STATE_CANCELED;
-					$order->setState($canceledStatus)->setStatus($canceledStatus);
-					$order->addStatusHistoryComment("Ordem #{$orderId} negada. (Checkout Drip #{$checkoutId})")->setIsCustomerNotified(true);
-					$order->save();
-					$redirectUrl = $storeManager->getStore()->getBaseUrl() . "checkout/onepage/failure";
-					return $this->_redirect->redirect($this->_response, $redirectUrl);
-				}
+				return $this->_redirect->redirect($this->_response, $baseUrl);
+			} else if ($checkout->status == 'KO') {
+				$canceledStatus = \Magento\Sales\Model\Order::STATE_CANCELED;
+				$order->setState($canceledStatus)->setStatus($canceledStatus);
+				$order->addStatusHistoryComment("Ordem #{$orderId} negada. (Checkout Drip #{$checkoutId})")->setIsCustomerNotified(true);
+				$order->save();
+				return $this->_redirect->redirect($this->_response, $baseUrl);
+			}
 		} else {
 			if ($checkout->status == 'OK') {
 				$redirectUrl = $storeManager->getStore()->getBaseUrl() . "checkout/onepage/success";
