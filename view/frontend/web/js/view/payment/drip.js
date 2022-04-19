@@ -12,8 +12,8 @@ define([
 
     rendererList.push(
         {
-            type: 'custompayment',
-            component: 'Drip_Payments/js/view/payment/method-renderer/custompayment-method'
+            type: 'drip',
+            component: 'Drip_Payments/js/view/payment/method-renderer/drip-method'
         }
     );
 

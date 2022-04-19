@@ -3,15 +3,16 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <payment>
-            <custompayment>
+            <drip>
                 <active>0</active>
                 <is_sandbox>0</is_sandbox>
-                <model>Drip\Payments\Model\Custompayment</model>
+                <model>Drip\Payments\Model\Drip</model>
                 <order_status>pending</order_status>
                 <title>Drip Pix Parcelado +2% de Cashback</title>
-                <allowspecific>0</allowspecific>
+                <sort_order>1</sort_order>
+                <is_gateway>1</is_gateway>
                 <group>offline</group>
-            </custompayment>
+            </drip>
         </payment>
     </default>
 </config>

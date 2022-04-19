@@ -18,7 +18,7 @@ class InstructionsConfigProvider implements ConfigProviderInterface
      * @var string[]
      */
     protected $methodCodes = [
-        Custompayment::CUSTOM_PAYMENT_CODE,
+        Drip::CUSTOM_PAYMENT_CODE,
     ];
 
     /**
@@ -61,7 +61,7 @@ class InstructionsConfigProvider implements ConfigProviderInterface
 
                 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
                 $config['payment']['dripPaymentsActualCnpj'] = 
-                    $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment/cnpj');
+                    $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/drip/cnpj');
             }
         }
         return $config;
@@ -81,7 +81,7 @@ class InstructionsConfigProvider implements ConfigProviderInterface
     private function getActualCashbackRatio() {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 
-		$configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
+		$configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/drip');
         $now = new DateTime();
         if(isset($configs['cashback'])) {
             $actualCashbackCache = (array) json_decode($configs['cashback']);
@@ -100,7 +100,7 @@ class InstructionsConfigProvider implements ConfigProviderInterface
             'expiration' => $now->add(new DateInterval('PT5M'))
         ]);
 
-        $objectManager->get('Magento\Framework\App\Config\Storage\WriterInterface')->save('payment/custompayment/cashback', $configs['cashback'], 'default');
+        $objectManager->get('Magento\Framework\App\Config\Storage\WriterInterface')->save('payment/drip/cashback', $configs['cashback'], 'default');
 
         return $actualCashback;
     }
@@ -108,7 +108,7 @@ class InstructionsConfigProvider implements ConfigProviderInterface
     private function getPluginIsDisabled() {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 
-		$configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
+		$configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/drip');
         $now = new DateTime();
         if(isset($configs['isDisabled'])) {
             $actualIsDisabledCache = (array) json_decode($configs['isDisabled']);
@@ -131,7 +131,7 @@ class InstructionsConfigProvider implements ConfigProviderInterface
             'expiration' => $now->add(new DateInterval('PT5M'))
         ]);
 
-        $objectManager->get('Magento\Framework\App\Config\Storage\WriterInterface')->save('payment/custompayment/isDisabled', $configs['isDisabled'], 'default');
+        $objectManager->get('Magento\Framework\App\Config\Storage\WriterInterface')->save('payment/drip/isDisabled', $configs['isDisabled'], 'default');
 
         return $actualIsDisabled;
     }

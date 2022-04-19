@@ -12,7 +12,7 @@ define([
 
     return Component.extend({
         defaults: {
-            template: 'Drip_Payments/payment/custompayment'
+            template: 'Drip_Payments/payment/drip'
         },
         totals: quote.getTotals(),
         getValue: function() {

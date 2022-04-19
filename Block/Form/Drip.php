@@ -8,12 +8,12 @@ namespace Drip\Payments\Block\Form;
 /**
  * Block for Custom payment method form
  */
-class Custompayment extends \Magento\OfflinePayments\Block\Form\AbstractInstruction
+class Drip extends \Magento\OfflinePayments\Block\Form\AbstractInstruction
 {
     /**
      * Custom payment template
      *
      * @var string
      */
-    protected $_template = 'Drip_Payments::form/custompayment.phtml';
+    protected $_template = 'Drip_Payments::form/drip.phtml';
 }

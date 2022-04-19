@@ -9,7 +9,7 @@
     <type name="Magento\Checkout\Model\CompositeConfigProvider">
         <arguments>
             <argument name="configProviders" xsi:type="array">
-                <item name="custompayment_instructions_config_provider" xsi:type="object">Drip\Payments\Model\InstructionsConfigProvider</item>
+                <item name="drip_instructions_config_provider" xsi:type="object">Drip\Payments\Model\InstructionsConfigProvider</item>
             </argument>
         </arguments>
     </type>

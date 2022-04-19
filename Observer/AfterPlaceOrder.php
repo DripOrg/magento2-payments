@@ -23,10 +23,10 @@ class AfterPlaceOrder implements ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $order = $observer->getEvent()->getOrder();
-        if($order->getPayment()->getMethodInstance()->getCode() == 'custompayment' && $order->getState() == 'new')
+        if($order->getPayment()->getMethodInstance()->getCode() == 'drip' && $order->getState() == 'new')
         {
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-            $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/custompayment');
+            $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/drip');
             if (!RequestService::checkActiveAndConfigValues($configs)) {
                 return false;
             }
