@@ -9,6 +9,7 @@
  - Limpe o cache da aplicação com o comando `php bin/magento cache:flush`
  - Gere um novo cache para as classes dos módulos `php bin/magento setup:di:compile`
  - Gere o conteudo estatico novamente `php bin/magento setup:static-content:deploy`
+ - Caso existam problemas com permissão, use o comando `chmod 777 -R var/ pub/ generated/`
 
 ### Type 2: Via Composer
 
@@ -18,3 +19,4 @@
  - Limpe o cache da aplicação com o comando `php bin/magento cache:flush`
  - Gere um novo cache para as classes dos módulos `php bin/magento setup:di:compile`
  - Gere o conteudo estatico novamente `php bin/magento setup:static-content:deploy`
+ - Caso existam problemas com permissão, use o comando `chmod 777 -R var/ pub/ generated/`
