@@ -46,7 +46,7 @@ define([
         },
         getTitleWithCashback: function() {
             var cashbackRate = window.checkoutConfig.payment.dripPaymentsActualCashbackRate;
-            return `Drip Pix Parcelado +${cashbackRate}% de Cashback`;
+            return `Pix Parcelado +${cashbackRate}% de Cashback`;
         },
         getDescriptionWithCashback: function() {
             var cashbackRate = window.checkoutConfig.payment.dripPaymentsActualCashbackRate;
