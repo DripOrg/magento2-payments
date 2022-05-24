@@ -23,14 +23,13 @@ class AfterPlaceOrder implements ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $order = $observer->getEvent()->getOrder();
-        if($order->getPayment()->getMethodInstance()->getCode() == 'drip' && $order->getState() == 'new')
-        {
+        if ($order->getPayment()->getMethodInstance()->getCode() == 'drip' && $order->getState() == 'new') {
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/drip');
             if (!RequestService::checkActiveAndConfigValues($configs)) {
                 return false;
             }
-            
+
             $requestService = RequestService::createInstance($configs);
 
             $checkoutData = $this->createCheckoutData($order);
@@ -38,7 +37,7 @@ class AfterPlaceOrder implements ObserverInterface
             if ($response->getStatusCode() === 201) {
                 $responseBody = json_decode($response->getBody());
                 $redirectUrl = $responseBody->formUrl . "?phone=" . preg_replace('/\D/', '', $checkoutData['customerPhone']);
-                $order->setExtOrderId($responseBody->id); 
+                $order->setExtOrderId($responseBody->id);
                 $order->save();
                 return $this->_redirect->redirect($this->_response, $redirectUrl);
             }
@@ -47,7 +46,8 @@ class AfterPlaceOrder implements ObserverInterface
         }
     }
 
-    private function createCheckoutData($order) {
+    private function createCheckoutData($order)
+    {
         $shippingAddressData = $order->getShippingAddress()->getData();
 
         return [
@@ -68,7 +68,8 @@ class AfterPlaceOrder implements ObserverInterface
         ];
     }
 
-    private function createProductsListFromOrder($order) {
+    private function createProductsListFromOrder($order)
+    {
         $orderProducts = [];
 
         //Add shipping to products list
@@ -91,8 +92,9 @@ class AfterPlaceOrder implements ObserverInterface
             $stockQuantity = 0;
             try {
                 $stockQuantity = $productModel->getExtensionAttributes()->getStockItem()->getQty();
-            } catch(Exception $e) {}
-            
+            } catch (Exception $e) {
+            }
+
 
             $backOrders = 0;
             if ($totalSales > $stockQuantity) {
@@ -119,18 +121,18 @@ class AfterPlaceOrder implements ObserverInterface
                 'ratingCount' => '',
                 'averageRating' => '',
                 'totalAmount' => number_format($itemArray['row_total'], 2, '.', ''),
-                'productDetails'=> ''
+                'productDetails' => ''
             ];
         }
         return $orderProducts;
     }
 
-    private function getCustomerCpfFromOrder($order) {
+    private function getCustomerCpfFromOrder($order)
+    {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         try {
             $customer = $objectManager->create('Magento\Customer\Api\CustomerRepositoryInterface')->getById($order->getCustomerId());
         } catch (Exception $e) {
-
         }
         if (isset($customer)) {
             $cpf = $customer->getCustomAttribute('cpf') != null ? $customer->getCustomAttribute('cpf')->getValue() : $order->getCustomerTaxvat();

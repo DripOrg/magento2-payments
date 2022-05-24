@@ -1,8 +1,10 @@
 <?php
+
 /**
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+
 namespace Drip\Payments\Model;
 
 /**
@@ -11,7 +13,7 @@ namespace Drip\Payments\Model;
  * @method \Magento\Quote\Api\Data\PaymentMethodExtensionInterface getExtensionAttributes()
  *
  * @api
- * @since 100.0.2
+ * @since 0.1.0
  */
 class Drip extends \Magento\Payment\Model\Method\AbstractMethod
 {

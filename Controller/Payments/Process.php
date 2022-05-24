@@ -1,17 +1,18 @@
-<?php 
+<?php
 
 namespace Drip\Payments\Controller\Payments;
 
 use Drip\Payments\Utils\RequestService;
 use Exception;
 
-class Process extends \Magento\Framework\App\Action\Action {
-	
+class Process extends \Magento\Framework\App\Action\Action
+{
+
 	public function __construct(
 		\Magento\Sales\Model\Service\InvoiceService $invoiceService,
 		\Magento\Framework\App\Response\RedirectInterface $redirect,
 		\Magento\Framework\App\RequestInterface $request,
-        \Magento\Framework\App\ResponseInterface $response,
+		\Magento\Framework\App\ResponseInterface $response,
 		\Magento\Framework\App\Action\Context $context,
 		\Magento\Framework\View\Result\PageFactory $pageFactory,
 		\Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender
@@ -19,7 +20,7 @@ class Process extends \Magento\Framework\App\Action\Action {
 		$this->invoiceService = $invoiceService;
 		$this->_redirect = $redirect;
 		$this->_request = $request;
-        $this->_response = $response;
+		$this->_response = $response;
 		$this->_pageFactory = $pageFactory;
 		$this->_invoiceSender = $invoiceSender;
 		return parent::__construct($context);
@@ -30,7 +31,7 @@ class Process extends \Magento\Framework\App\Action\Action {
 		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 		$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
 		$baseUrl = $storeManager->getStore()->getBaseUrl();
-		
+
 		$checkoutId = $this->_request->getParam('checkoutId');
 		if (!preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $checkoutId, $matches)) {
 			return $this->_redirect->redirect($this->_response, $baseUrl);
@@ -46,7 +47,7 @@ class Process extends \Magento\Framework\App\Action\Action {
 
 		try {
 			$checkout = $requestService->getCheckout($checkoutId);
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			return $this->_redirect->redirect($this->_response, $baseUrl);
 		}
 
@@ -62,7 +63,7 @@ class Process extends \Magento\Framework\App\Action\Action {
 				$order->addStatusHistoryComment("Ordem #{$orderId} aprovada. (Checkout Drip #{$checkoutId}, Ordem Drip #{$checkout->orderId})")->setIsCustomerNotified(false);
 				$order->save();
 
-				$invoice = $this->invoiceService->prepareInvoice($order);        
+				$invoice = $this->invoiceService->prepareInvoice($order);
 				$invoice->setTransactionId($checkoutId);
 				$invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
 				$invoice->register();

@@ -13,17 +13,17 @@ class ConfigObserver implements ObserverInterface
      *
      * @param Observer $observer          
      */
-    public function execute(Observer $observer) {
+    public function execute(Observer $observer)
+    {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 
-		$configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/drip');
+        $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/drip');
 
         if (!RequestService::checkActiveAndConfigValues($configs)) {
             return false;
         }
-		$requestService = RequestService::createInstance($configs);
+        $requestService = RequestService::createInstance($configs);
 
         $objectManager->get('Magento\Framework\App\Config\Storage\WriterInterface')->save('payment/drip/cnpj', $requestService->getCnpj(), 'default');
     }
-
 }
