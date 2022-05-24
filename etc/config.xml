@@ -11,7 +11,7 @@
                 <title>Pix Parcelado +2% de Cashback</title>
                 <sort_order>1</sort_order>
                 <is_gateway>1</is_gateway>
-                <group>offline</group>
+                <cron_for_cancel_orders>15</cron_for_cancel_orders>
             </drip>
         </payment>
     </default>
