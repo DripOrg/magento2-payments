@@ -2,92 +2,42 @@
 
 namespace Drip\Payments\Cron;
 
-use Magento\Framework\Api\FilterBuilder;
-use Magento\Framework\Api\Search\FilterGroup;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Sales\Api\OrderRepositoryInterface;
-
 class CloseOrder
 {
-    /**
-     * @var OrderRepositoryInterface
-     */
-    private $orderRepository;
-
-    /**
-     * @var SearchCriteriaBuilder
-     */
-    private $searchCriteriaBuilder;
-
-    /**
-     * @var FilterBuilder
-     */
-    private $filterBuilder;
-
-    /**
-     * @var FilterGroup
-     */
-    private $filterGroup;
-
-    /**
-     * CancelOrderPending constructor.
-     *
-     * @param OrderRepositoryInterface $orderRepository
-     * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param FilterBuilder $filterBuilder
-     * @param FilterGroup $filterGroup
-     */
-    public function __construct(
-        OrderRepositoryInterface $orderRepository,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
-        FilterBuilder $filterBuilder,
-        FilterGroup $filterGroup
-    ) {
-        $this->orderRepository       = $orderRepository;
-        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->filterBuilder         = $filterBuilder;
-        $this->filterGroup           = $filterGroup;
-    }
-
     /**
      * @throws \Exception
      */
     public function execute()
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $orderRepository = $objectManager->get('Magento\Sales\Api\OrderRepositoryInterface');
+        $searchCriteriaBuilder = $objectManager->get('Magento\Framework\Api\SearchCriteriaBuilder');
+        $sortBuilder = $objectManager->get('\Magento\Framework\Api\SortOrderBuilder');
+
         $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/drip');
         $cron_in_minutes = isset($configs["cron_for_cancel_orders"]) ? $configs["cron_for_cancel_orders"] : 15;
 
         if ($cron_in_minutes > 60) $cron_in_minutes = 60;
         if ($cron_in_minutes < 1) $cron_in_minutes = 1;
 
-        $today          = date("Y-m-d h:i:s");
-        $to             = strtotime("-$cron_in_minutes min", strtotime($today));
-        $to             = date('Y-m-d h:i:s', $to);
+        $searchCriteria = $searchCriteriaBuilder
+            ->addFilter('status', 'pending', 'eq')
+            ->addSortOrder($sortBuilder->setField('entity_id')
+                ->setDescendingDirection()->create())
+            ->setPageSize(100)->setCurrentPage(1)->create();
 
-        $filterGroupDate      = $this->filterGroup;
-        $filterGroupStatus    = clone ($filterGroupDate);
+        $today = date("Y-m-d h:i:s");
 
-        $filterDate      = $this->filterBuilder
-            ->setField('updated_at')
-            ->setConditionType('to')
-            ->setValue($to)
-            ->create();
-        $filterStatus    = $this->filterBuilder
-            ->setField('status')
-            ->setConditionType('eq')
-            ->setValue('pending')
-            ->create();
+        $to    = strtotime("-$cron_in_minutes min", strtotime($today));
+        $to  = date('Y-m-d h:i:s', $to);
 
-        $filterGroupDate->setFilters([$filterDate]);
-        $filterGroupStatus->setFilters([$filterStatus]);
+        $from  = strtotime('-2 day', strtotime($to));
+        $from  = date('Y-m-d h:i:s', $from);
 
-        $searchCriteria = $this->searchCriteriaBuilder->setFilterGroups(
-            [$filterGroupDate, $filterGroupStatus]
-        );
-        $searchResults  = $this->orderRepository->getList($searchCriteria->create());
+        $ordersList = $orderRepository->getList($searchCriteria);
+        $ordersList->addFieldToFilter('created_at', array('from' => $from, 'to' => $to));
 
-        foreach ($searchResults->getItems() as $order) {
+        foreach ($ordersList->getItems() as $order) {
             if ($order->getPayment()->getMethodInstance()->getCode() == 'drip') {
                 $canceledStatus = \Magento\Sales\Model\Order::STATE_CANCELED;
                 $order->setState($canceledStatus)->setStatus($canceledStatus);
