@@ -10,34 +10,25 @@ class CloseOrder
     public function execute()
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $orderRepository = $objectManager->get('Magento\Sales\Api\OrderRepositoryInterface');
-        $searchCriteriaBuilder = $objectManager->get('Magento\Framework\Api\SearchCriteriaBuilder');
-        $sortBuilder = $objectManager->get('\Magento\Framework\Api\SortOrderBuilder');
-
         $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/drip');
+
         $cron_in_minutes = isset($configs["cron_for_cancel_orders"]) ? $configs["cron_for_cancel_orders"] : 15;
 
         if ($cron_in_minutes > 60) $cron_in_minutes = 60;
         if ($cron_in_minutes < 1) $cron_in_minutes = 1;
 
-        $searchCriteria = $searchCriteriaBuilder
-            ->addFilter('status', 'pending', 'eq')
-            ->addSortOrder($sortBuilder->setField('entity_id')
-                ->setDescendingDirection()->create())
-            ->setPageSize(100)->setCurrentPage(1)->create();
+        // NEED CHANT lteq TO USE CRON_IN_MINUTES
+        $gteq = strtotime('-2 day');
+        $lteq = strtotime("-$cron_in_minutes minute");
 
-        $today = date("Y-m-d h:i:s");
+        $OrderFactory = $objectManager->create('Magento\Sales\Model\ResourceModel\Order\CollectionFactory');
+        $orderCollection = $OrderFactory->create()->addFieldToSelect(array('*'));
+        $orderCollection
+            ->addFieldToFilter('status', array('in' => array('pending', 'pending_payment')))
+            ->addFieldToFilter('created_at', ['lteq' => date('Y-m-d H:i:s', $lteq)])
+            ->addFieldToFilter('created_at', ['gteq' => date('Y-m-d H:i:s', $gteq)]);
 
-        $to    = strtotime("-$cron_in_minutes min", strtotime($today));
-        $to  = date('Y-m-d h:i:s', $to);
-
-        $from  = strtotime('-2 day', strtotime($to));
-        $from  = date('Y-m-d h:i:s', $from);
-
-        $ordersList = $orderRepository->getList($searchCriteria);
-        $ordersList->addFieldToFilter('created_at', array('from' => $from, 'to' => $to));
-
-        foreach ($ordersList->getItems() as $order) {
+        foreach ($orderCollection as $order) {
             if ($order->getPayment()->getMethodInstance()->getCode() == 'drip') {
                 $canceledStatus = \Magento\Sales\Model\Order::STATE_CANCELED;
                 $order->setState($canceledStatus)->setStatus($canceledStatus);
