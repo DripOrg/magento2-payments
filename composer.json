@@ -3,7 +3,7 @@
     "description": "Drip payments for Magento 2",
     "type": "magento2-module",
     "license": "Apache-2.0",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "require": {
     },
     "authors": [

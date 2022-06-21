@@ -27,18 +27,49 @@ class Drip extends \Magento\Payment\Model\Method\AbstractMethod
     protected $_code = self::CUSTOM_PAYMENT_CODE;
 
     /**
-     * Info instructions block path
-     *
-     * @var string
+     * {@inheritdoc}
      */
-    protected $_infoBlockType = \Magento\Payment\Block\Info\Instructions::class;
+    protected $_isGateway = true;
 
     /**
-     * Availability option
-     *
-     * @var bool
+     * {@inheritdoc}
      */
-    protected $_isOffline = true;
+    protected $_canOrder = true;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $_canAuthorize = true;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $_canCapture = true;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $_canRefund = true;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $_canRefundInvoicePartial = true;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $_canUseCheckout = true;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $_canFetchTransactionInfo = true;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $_canReviewPayment = true;
 
     /**
      * Get instructions text from config
