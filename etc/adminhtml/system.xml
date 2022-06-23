@@ -41,8 +41,8 @@
                     <validate>validate-number</validate>
                 </field>
                 <field id="cron_for_cancel_orders" translate="label" type="text" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Tempo em minutos para o cancelamento automatico de ordens sem pagamento (min: 15, max: 60)</label>
-                    <validate>validate-number validate-number-range number-range-15-60</validate>
+                    <label>Tempo em minutos para o cancelamento automatico de ordens sem pagamento (min: 30, max: 120)</label>
+                    <validate>validate-number validate-number-range number-range-30-120</validate>
                 </field>
             </group>
         </section>

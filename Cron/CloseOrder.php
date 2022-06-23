@@ -12,10 +12,10 @@ class CloseOrder
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $configs = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('payment/drip');
 
-        $cron_in_minutes = isset($configs["cron_for_cancel_orders"]) ? $configs["cron_for_cancel_orders"] : 15;
+        $cron_in_minutes = isset($configs["cron_for_cancel_orders"]) ? $configs["cron_for_cancel_orders"] : 30;
 
-        if ($cron_in_minutes > 60) $cron_in_minutes = 60;
-        if ($cron_in_minutes < 1) $cron_in_minutes = 1;
+        if ($cron_in_minutes > 120) $cron_in_minutes = 120;
+        if ($cron_in_minutes < 30) $cron_in_minutes = 30;
 
         // NEED CHANT lteq TO USE CRON_IN_MINUTES
         $gteq = strtotime('-2 day');

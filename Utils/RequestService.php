@@ -52,7 +52,7 @@ class RequestService
 
         $apiKey = $isSandbox == 0 ? $configs['api_key'] : $configs['sandbox_api_key'];
 
-        return new RequestService($apiKey, $isSandbox, '0.0.15', null);
+        return new RequestService($apiKey, $isSandbox, '0.1.3', null);
     }
 
     public function __construct($merchantKey, $testMode, $plugin_version, \GuzzleHttp\Client $client = null)
