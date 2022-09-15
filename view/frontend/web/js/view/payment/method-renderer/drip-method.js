@@ -46,10 +46,16 @@ define([
         },
         getTitleWithCashback: function() {
             var cashbackRate = window.checkoutConfig.payment.dripPaymentsActualCashbackRate;
+            if (cashbackRate == 0) {
+                return 'Pix Parcelado'
+            }
             return `Pix Parcelado +${cashbackRate}% de Cashback`;
         },
         getDescriptionWithCashback: function() {
             var cashbackRate = window.checkoutConfig.payment.dripPaymentsActualCashbackRate;
+            if (cashbackRate == 0) {
+                return 'Compre em 3x no Pix, com zero juros. Compre e receba seu produto agora e faça o primeiro pagamento só daqui 1 mês.';
+            }
             return `Compre em 3x no Pix. Com ${cashbackRate}% de cashback e zero juros. Compre e receba seu produto agora e faça o primeiro pagamento só daqui 1 mês.`;
         },
         checkDripIsEnabled: function() {
