@@ -59,7 +59,9 @@ class Process extends \Magento\Framework\App\Action\Action
 		if ($order->getStatus() == 'pending') {
 			if ($checkout->status == 'OK') {
 				$order->setState($processingStatus)->setStatus($processingStatus);
-				$order->setTotalPaid(number_format($order->getGrandTotal(), 2, '.', ''));
+                $total_paid = number_format($order->getGrandTotal(), 2, '.', '');
+                $order->setTotalPaid($total_paid);
+                $order->setBaseTotalPaid($total_paid);
 				$order->addStatusHistoryComment("Ordem #{$orderId} aprovada. (Checkout Drip #{$checkoutId}, Ordem Drip #{$checkout->orderId})")->setIsCustomerNotified(false);
 				$order->save();
 
